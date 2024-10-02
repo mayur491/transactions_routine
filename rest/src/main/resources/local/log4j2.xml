@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration monitorInterval="60" status="INFO">
+    <Properties>
+        <Property name="LOG_PATTERN">%highlight{[%p] %d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} [%t] %c{1}::%M : %L -%n%m%n%n}</Property>
+        <Property name="log-path">/tmp/codemayur/transactions-routine/logs</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+        <RollingFile name="ConsoleFile"
+                     fileName="${log-path}/application.log"
+                     filePattern="${log-path}/application-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="5 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50">
+                <Delete basePath="${log-path}" maxDepth="2">
+                    <IfFileName glob="*/application-*.log.gz">
+                        <IfLastModified age="5d">
+                            <IfAccumulatedFileCount exceeds="5"/>
+                        </IfLastModified>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.codemayur.transactions_routine" level="all" additivity="false" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <appender-ref ref="ConsoleFile"/>
+        </Logger>
+        <Root level="info" includeLocation="true">
+            <AppenderRef ref="Console"/>
+            <appender-ref ref="ConsoleFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
