@@ -1,5 +1,6 @@
 package com.codemayur.transactions_routine.core.dto;
 
+import com.codemayur.transactions_routine.core.bo.AccountBo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

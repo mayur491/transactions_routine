@@ -7,6 +7,8 @@ import com.codemayur.transactions_routine.core.entity.TransactionEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
+import java.util.List;
+
 @Mapper
 public interface TransactionMapper {
 
@@ -14,12 +16,16 @@ public interface TransactionMapper {
 
     TransactionBo entityToBo(final TransactionEntity transactionEntity);
 
+    List<TransactionBo> entityToBo(final List<TransactionEntity> transactionEntityList);
+
     TransactionEntity boToEntity(final TransactionBo transactionBo);
+
+    List<TransactionEntity> boToEntity(final List<TransactionBo> transactionBoList);
 
     TransactionResponseDto entityToResponseDto(final TransactionEntity transactionEntity);
 
-    TransactionResponseDto boToResponseDto(final TransactionBo transactionBo);
-
     TransactionEntity requestDtoToEntity(final TransactionRequestDto transactionRequestDto);
+
+    TransactionResponseDto boToResponseDto(final TransactionBo transactionBo);
 
 }

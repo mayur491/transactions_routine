@@ -27,19 +27,14 @@ public class TransactionResponseDto {
 
     @JsonProperty("transaction_id")
     private Long transactionId;
-    @JsonProperty("account_id")
-    private Long accountId;
-    @JsonProperty("operation_type_id")
-    private Long operationTypeId;
+    @JsonProperty("account")
+    private AccountBo account;
+    @JsonProperty("operation_type")
+    private OperationTypeBo operationType;
     @JsonProperty("amount")
     private BigDecimal amount;
     @JsonProperty("event_date")
     private Timestamp eventDate;
-
-    @JsonProperty("account")
-    private AccountResponseDto accountResponseDto;
-    @JsonProperty("operation_type")
-    private OperationTypeBo operationTypeBo;
 
     @JsonProperty("error_code")
     private String errorCode;

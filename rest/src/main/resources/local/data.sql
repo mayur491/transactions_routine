@@ -1,18 +1,18 @@
+DROP TABLE IF EXISTS transactions;
+
 DROP TABLE IF EXISTS operation_types;
+
+DROP TABLE IF EXISTS accounts;
 
 CREATE TABLE operation_types (
     operation_type_id INT AUTO_INCREMENT PRIMARY KEY,
     description VARCHAR(255) NOT NULL
 );
 
-DROP TABLE IF EXISTS accounts;
-
 CREATE TABLE accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     document_number VARCHAR(255) NOT NULL
 );
-
-DROP TABLE IF EXISTS transactions;
 
 CREATE TABLE transactions (
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,

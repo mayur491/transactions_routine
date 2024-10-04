@@ -5,6 +5,7 @@ import com.codemayur.transactions_routine.core.exception.OperationTypeException;
 import com.codemayur.transactions_routine.core.exception.OperationTypeNotFoundException;
 import com.codemayur.transactions_routine.service.OperationTypeService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,8 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+
+import static com.codemayur.transactions_routine.core.constant.AppURLConstants.API_V1;
+import static com.codemayur.transactions_routine.core.constant.AppURLConstants.OPERATION_TYPE;
+import static com.codemayur.transactions_routine.core.constant.AppURLConstants.SLASH;
 
 @Profile({ "local", "stage" })
 @RestController
@@ -25,6 +31,9 @@ import java.util.List;
 public class OperationTypeController {
 
     private final OperationTypeService operationTypeService;
+
+    @Value("${transactions.routine.base.url}")
+    private String baseUrl;
 
     public OperationTypeController(final OperationTypeService operationTypeService) {
         this.operationTypeService = operationTypeService;
@@ -59,7 +68,15 @@ public class OperationTypeController {
     @PostMapping
     public ResponseEntity<OperationTypeBo> createOperationType(@RequestBody OperationTypeBo operationTypeBo) {
         try {
-            return ResponseEntity.ok(operationTypeService.createOperationType(operationTypeBo));
+            final OperationTypeBo operationType = operationTypeService.createOperationType(operationTypeBo);
+            try {
+                return ResponseEntity.created(new URI(baseUrl + API_V1 + OPERATION_TYPE + SLASH + operationType.getOperationTypeId()))
+                                     .body(operationType);
+            } catch (URISyntaxException e) {
+                log.warn("OperationTypeController::URISyntaxException", e);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                     .body(operationType);
+            }
         } catch (OperationTypeException e) {
             log.error("Error while creating operation type", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
