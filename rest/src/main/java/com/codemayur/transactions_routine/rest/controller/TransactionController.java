@@ -1,5 +1,6 @@
 package com.codemayur.transactions_routine.rest.controller;
 
+import com.codemayur.transactions_routine.core.bo.TransactionBo;
 import com.codemayur.transactions_routine.core.dto.TransactionRequestDto;
 import com.codemayur.transactions_routine.core.dto.TransactionResponseDto;
 import com.codemayur.transactions_routine.core.exception.AccountNotFoundException;
@@ -16,10 +17,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
 
 import static com.codemayur.transactions_routine.core.constant.AppURLConstants.API_V1;
 import static com.codemayur.transactions_routine.core.constant.AppURLConstants.SLASH;
@@ -57,21 +61,25 @@ public class TransactionController {
         }
     }
 
-    @GetMapping("/{transactionId}")
-    public ResponseEntity<TransactionResponseDto> getTransactionById(@PathVariable Long transactionId) {
+    @GetMapping("/account-operation-type")
+    public ResponseEntity<List<TransactionBo>> getTransactionByAccountIdAndOrOperationTypeId(
+            @RequestParam(required = false) Long accountId,
+            @RequestParam(required = false) Long operationTypeId) {
         try {
-            return ResponseEntity.ok(transactionService.getTransactionById(transactionId));
-        } catch (TransactionNotFoundException transactionNotFoundException) {
-            log.error(transactionNotFoundException.getMessage(), transactionNotFoundException);
-            return ResponseEntity.noContent().build();
+            if (accountId != null && operationTypeId != null) {
+                return ResponseEntity.ok(transactionService.getTransactionsByAccountIdAndOperationTypeId(accountId,
+                                                                                                         operationTypeId));
+            } else if (accountId == null && operationTypeId != null) {
+                return ResponseEntity.ok(transactionService.getTransactionsByOperationTypeId(operationTypeId));
+            } else if (accountId != null) {
+                return ResponseEntity.ok(transactionService.getTransactionsByAccountId(accountId));
+            }
+            return ResponseEntity.badRequest().body(Collections.emptyList());
         } catch (TransactionException e) {
-            log.error("Error while fetching transaction with transactionId: {}", transactionId, e);
-            TransactionResponseDto transactionResponseDto =
-                    TransactionResponseDto.builder()
-                                          .errorCode("TC50001")
-                                          .errorMessage("Internal Server Error")
-                                          .build();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(transactionResponseDto);
+            log.error("Error while fetching transactions. accountId: {}, operationTypeId: {}",
+                      accountId, operationTypeId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                 .body(Collections.emptyList());
         }
     }
 
