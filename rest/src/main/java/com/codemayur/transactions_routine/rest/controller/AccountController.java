@@ -6,6 +6,7 @@ import com.codemayur.transactions_routine.core.exception.AccountException;
 import com.codemayur.transactions_routine.core.exception.AccountNotFoundException;
 import com.codemayur.transactions_routine.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +16,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import static com.codemayur.transactions_routine.core.constant.AppURLConstants.ACCOUNTS;
+import static com.codemayur.transactions_routine.core.constant.AppURLConstants.API_V1;
+import static com.codemayur.transactions_routine.core.constant.AppURLConstants.SLASH;
+
 @RestController
 @RequestMapping("/api/v1/accounts")
 @Slf4j
 public class AccountController {
 
     private final AccountService accountService;
+
+    @Value("${transactions.routine.base.url}")
+    private String baseUrl;
 
     public AccountController(final AccountService accountService) {
         this.accountService = accountService;
@@ -51,9 +62,15 @@ public class AccountController {
     public ResponseEntity<AccountResponseDto> createAccount(@RequestBody AccountRequestDto accountRequestDto) {
         AccountResponseDto accountResponseDto;
         try {
-
-            return ResponseEntity.ok(accountService.createAccount(accountRequestDto));
-
+            accountResponseDto = accountService.createAccount(accountRequestDto);
+            try {
+                return ResponseEntity.created(new URI(baseUrl + API_V1 + ACCOUNTS + SLASH + accountResponseDto.getAccountId()))
+                                     .body(accountResponseDto);
+            } catch (URISyntaxException e) {
+                log.warn("AccountController::URISyntaxException", e);
+                return ResponseEntity.status(HttpStatus.CREATED)
+                                     .body(accountResponseDto);
+            }
         } catch (AccountException accountException) {
             log.error(accountException.getMessage(), accountException);
             accountResponseDto = AccountResponseDto.builder()

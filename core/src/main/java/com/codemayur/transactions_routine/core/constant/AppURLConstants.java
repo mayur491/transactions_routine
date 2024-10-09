@@ -9,7 +9,8 @@ public class AppURLConstants {
     public static final String SLASH = "/";
     public static final String API_V1 = "/api/v1";
 
-    public static final String TRANSACTIONS = "/transactions";
+    public static final String ACCOUNTS = "/accounts";
     public static final String OPERATION_TYPE = "/operation-type";
+    public static final String TRANSACTIONS = "/transactions";
 
 }
