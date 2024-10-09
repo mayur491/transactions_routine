@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,7 +28,8 @@ import java.sql.Timestamp;
 @Entity
 @Table(name = "transactions", indexes = {
         @javax.persistence.Index(name = "transactions_account_id_index", columnList = "account_id"),
-        @javax.persistence.Index(name = "transactions_operation_type_id_index", columnList = "operation_type_id")
+        @javax.persistence.Index(name = "transactions_operation_type_id_index", columnList = "operation_type_id"),
+        @javax.persistence.Index(name = "transactions_account_id_operation_type_id_index", columnList = "account_id, operation_type_id")
 })
 public class TransactionEntity {
 

@@ -6,12 +6,16 @@ DROP TABLE IF EXISTS accounts;
 
 CREATE TABLE operation_types (
     operation_type_id INT AUTO_INCREMENT PRIMARY KEY,
-    description VARCHAR(255) NOT NULL
+    description VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE accounts (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
-    document_number VARCHAR(255) NOT NULL
+    document_number VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE transactions (
@@ -23,6 +27,10 @@ CREATE TABLE transactions (
     FOREIGN KEY (account_id) REFERENCES accounts(account_id),
     FOREIGN KEY (operation_type_id) REFERENCES operation_types(operation_type_id)
 );
+
+CREATE INDEX idx_account_id ON transactions(account_id);
+CREATE INDEX idx_operation_type_id ON transactions(operation_type_id);
+CREATE INDEX idx_account_id_operation_type_id ON transactions(account_id, operation_type_id);
 
 INSERT INTO operation_types (description) VALUES ('Normal Purchase');
 INSERT INTO operation_types (description) VALUES ('Purchase with installments');
