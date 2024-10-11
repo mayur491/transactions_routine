@@ -5,6 +5,10 @@ import com.codemayur.transactions_routine.core.dto.AccountResponseDto;
 import com.codemayur.transactions_routine.core.exception.AccountException;
 import com.codemayur.transactions_routine.core.exception.AccountNotFoundException;
 import com.codemayur.transactions_routine.service.AccountService;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -37,6 +41,15 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                         description = "OK",
+                         content = @Content(mediaType = "application/json",
+                                            schema = @Schema(implementation = AccountResponseDto.class))),
+            @ApiResponse(responseCode = "204", description = "No Content", content = @Content(schema =
+            @Schema(hidden = true))),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error")
+    })
     @GetMapping("/{accountId}")
     public ResponseEntity<AccountResponseDto> getAccount(@PathVariable Long accountId) {
         AccountResponseDto accountResponseDto;
@@ -48,10 +61,10 @@ public class AccountController {
             log.error(accountNotFoundException.getMessage(), accountNotFoundException);
             return ResponseEntity.noContent().build();
         } catch (AccountException e) {
-            log.error("Error while fetching account with accountId: {}", accountId, e);
+            log.error(e.getMessage(), e);
             accountResponseDto = AccountResponseDto.builder()
                                                    .errorCode("AC50001")
-                                                   .errorMessage("Internal Server Error")
+                                                   .errorMessage(e.getMessage())
                                                    .build();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(accountResponseDto);
         }
