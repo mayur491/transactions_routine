@@ -15,4 +15,4 @@ set -x
 mvn clean compile package -DskipTests -P$ENV -Dspring.profiles.active=$ENV
 
 # Run the Spring Boot application
-java -jar rest/target/*.jar
+java -jar -Dspring.profiles.active=$ENV rest/target/*.jar
